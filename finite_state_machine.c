@@ -70,7 +70,7 @@ enum state fsm_run(enum state current_state) {
 			next_state = em_stop_anywhere;
 		}
 		else{
-			if(timer_is_time_out()){
+			if(timer_check()){
 				fsm_trans_close();
 				next_state = door_closed;
 			}
@@ -129,11 +129,11 @@ void fsm_trans_arrive(){
 	elev_set_motor_direction(0);
 	oov_reset_floor_orders(current_floor);
 	elev_set_door_open_lamp(1);
-	timer_start_timer();
+	timer_start();
 }
 
 void fsm_trans_reopen(){
-	timer_start_timer();
+	timer_start();
 	oov_reset_floor_orders(current_floor);
 }
 
@@ -156,6 +156,6 @@ void fsm_trans_em_stop_release(){
 }
 
 void fsm_trans_em_stop_floor_release(){
-	timer_start_timer();
+	timer_start();
 	elev_set_stop_lamp(0);
 }

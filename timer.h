@@ -1,2 +1,2 @@
-void timer_start_timer();
-int timer_is_time_out();            
+void timer_start();
+int timer_check();            
