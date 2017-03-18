@@ -29,7 +29,7 @@ enum state fsm_run(enum state current_state) {
 		break;
 
 	case(door_closed):
-		oov_check_order_buttons();
+		oov_set_new_orders();
 		if(elev_get_stop_signal()){	
 			fsm_trans_em_stop_press();
 			next_state = em_stop_anywhere;
@@ -41,7 +41,7 @@ enum state fsm_run(enum state current_state) {
 		break;
 
 	case(fulfilling_order):
-		oov_check_order_buttons();
+		oov_set_new_orders();
 		if(elev_get_stop_signal()){
 			fsm_trans_em_stop_press();
 			next_state = em_stop_anywhere; 
@@ -64,7 +64,7 @@ enum state fsm_run(enum state current_state) {
 		break;
 
 	case(door_open):
-		oov_check_order_buttons();
+		oov_set_new_orders();
 		if (elev_get_stop_signal()){
 			fsm_trans_em_stop_press();
 			next_state = em_stop_anywhere;
