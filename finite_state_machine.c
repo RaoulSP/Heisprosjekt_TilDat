@@ -5,17 +5,21 @@
 
 enum state fsm_run(enum state current_state) {
 	
-	/*
-	Kode som bare gjennomføres én gang i overgangene mellom tilstandene, kjøres i "fsm_trans" funksjonene
-	Kode som må kjøres kontinuerlig mens heisen er i en tilstand, kjøres i casene
-	*/
+	//Kode som bare gjennomføres én gang i overgangene mellom tilstandene, kjøres i "fsm_trans" funksjonene
+	//Kode som må kjøres kontinuerlig mens heisen er i en tilstand, kjøres i casene
 
 	switch (current_state) {
 
-	case(start):
-		fsm_trans_start_calibration();
-		next_state = calibrating;
+	case(initialize):
+		if (!elev_init()) { 									//Initialiser maskinvare
+			printf("Unable to initialize elevator hardware!\n");
+			next_state = exit;
+		}
+		else{
+			fsm_trans_start_calibration();
+			next_state = calibrating;
 		break;
+		}
 
 	case(calibrating):
 		if(elev_get_floor_sensor_signal() >= 0) {
@@ -98,6 +102,7 @@ enum state fsm_run(enum state current_state) {
 		}
 		break;
 	}
+
 	return next_state;
 }
 
