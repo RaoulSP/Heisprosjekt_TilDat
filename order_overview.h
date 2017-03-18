@@ -3,3 +3,5 @@ int oov_get_order(int floor, int dir);
 void oov_reset_all_orders();	
 void oov_reset_floor_orders(int floor);
 int oov_get_amount();
+int oov_check_orders_along_dir(int from_floor, int along_dir);		//Sjekker om det er gjort bestillinger langs en gitt retning fra en gitt etasje, og returnerer 1 dersom den finner noe 
+void oov_check_order_buttons(); 									//Sjekker om bestillingsknapper er trykket og lagrer dem som ordre i "order_overview"

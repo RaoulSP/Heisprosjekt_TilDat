@@ -32,3 +32,24 @@ void oov_reset_all_orders(){
 int oov_get_amount(){
 	return orders_amount;
 }
+
+int oov_check_orders_along_dir(int from_floor, int along_dir){
+	for (int floor = from_floor; (floor >= 0 && floor < 4); floor += along_dir){
+		for(int button = 0; button < 3; button++){
+			if (oov_get_order(floor, button)) {
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+
+void oov_check_order_buttons(){
+	for(int floor = 0; floor < 4; floor++){
+		for(int button = 0; button < 3; button++){
+			if(!((floor == 0 && button == 1) || (floor == 3 && button == 0)) && elev_get_button_signal(button, floor)){ //Ikke sjekk ned og opp i henholdsvis 1. og 4. etasje
+    			oov_set_order(floor, button, 1);	  				
+			}
+		}
+	}
+}

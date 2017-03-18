@@ -30,7 +30,7 @@ enum state fsm_run(enum state current_state) {
 		break;
 
 	case(door_closed):
-		check_order_buttons();
+		oov_check_order_buttons();
 		if(elev_get_stop_signal()){	
 			fsm_trans_em_stop_press();
 			next_state = em_stop_anywhere;
@@ -42,7 +42,7 @@ enum state fsm_run(enum state current_state) {
 		break;
 
 	case(fulfilling_order):
-		check_order_buttons();
+		oov_check_order_buttons();
 		if(elev_get_stop_signal()){
 			fsm_trans_em_stop_press();
 			next_state = em_stop_anywhere; 
@@ -56,7 +56,7 @@ enum state fsm_run(enum state current_state) {
 					elev_set_floor_indicator(current_floor);
 				}
 				//Stopper hvis noen vil av heisen, eller påstige i bevegelsesretningen, eller hvis det ikke er flere bestillinger i etasjene lenger bort i bevegelsesretningen
-				if(oov_get_order(current_floor, 2) || (oov_get_order(current_floor, 0) && dir == 1) || (oov_get_order(current_floor, 1) && dir == -1) || !check_along_dir(current_floor + dir, dir)){
+				if(oov_get_order(current_floor, 2) || (oov_get_order(current_floor, 0) && dir == 1) || (oov_get_order(current_floor, 1) && dir == -1) || !check_orders_along_dir(current_floor + dir, dir)){
 						fsm_trans_arrive();
 						next_state = door_open;
 				}
@@ -65,7 +65,7 @@ enum state fsm_run(enum state current_state) {
 		break;
 
 	case(door_open):
-		check_order_buttons();
+		oov_check_order_buttons();
 		if (elev_get_stop_signal()){
 			fsm_trans_em_stop_press();
 			next_state = em_stop_anywhere;
@@ -119,7 +119,7 @@ void fsm_trans_finish_calibration(){
 }
 
 void fsm_trans_depart(){
-	if(!check_along_dir(current_floor + dir, dir)){
+	if(!check_orders_along_dir(current_floor + dir, dir)){
 		current_floor += dir;
 		dir *= -1;
 	}
@@ -159,25 +159,4 @@ void fsm_trans_em_stop_release(){
 void fsm_trans_em_stop_floor_release(){
 	timer_start_timer();
 	elev_set_stop_lamp(0);
-}
-
-int check_along_dir(int from_floor, int along_dir){
-	for (int floor = from_floor; (floor >= 0 && floor < 4); floor += along_dir){
-		for(int button = 0; button < 3; button++){
-			if (oov_get_order(floor, button)) {
-				return 1;
-			}
-		}
-	}
-	return 0;
-}
-
-void check_order_buttons(){
-	for(int floor = 0; floor < 4; floor++){
-		for(int button = 0; button < 3; button++){
-			if(!((floor == 0 && button == 1) || (floor == 3 && button == 0)) && elev_get_button_signal(button, floor)){ //Ikke sjekk ned og opp i henholdsvis 1. og 4. etasje
-    			oov_set_order(floor, button, 1);	  				
-			}
-		}
-	}
 }

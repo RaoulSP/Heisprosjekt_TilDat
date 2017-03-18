@@ -30,7 +30,3 @@ void fsm_trans_em_stop_press();
 void fsm_trans_em_stop_release();
 void fsm_trans_em_stop_open();
 void fsm_trans_em_stop_floor_release();
-
-//Hjelpefunksjoner
-int check_along_dir(int from_floor, int along_dir);		//Sjekker om det er gjort bestillinger langs en gitt retning fra en gitt etasje, og returnerer 1 dersom den finner noe 
-void check_order_buttons(); 							//Sjekker om bestillingsknapper er trykket og lagrer dem som ordre i "order_overview"
