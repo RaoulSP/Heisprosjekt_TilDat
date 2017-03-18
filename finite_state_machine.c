@@ -4,10 +4,9 @@
 #include "timer.h"
 #include "order_overview.h"
 
+//Kode som bare gjennomføres én gang i overgangene mellom tilstandene, kjøres i "fsm_trans" funksjonene
+//Kode som må kjøres kontinuerlig mens heisen er i en tilstand, kjøres i casene
 enum state fsm_run(enum state current_state) {
-	
-	//Kode som bare gjennomføres én gang i overgangene mellom tilstandene, kjøres i "fsm_trans" funksjonene
-	//Kode som må kjøres kontinuerlig mens heisen er i en tilstand, kjøres i casene
 
 	switch (current_state) {
 
@@ -19,8 +18,8 @@ enum state fsm_run(enum state current_state) {
 		else{
 			fsm_trans_start_calibration();
 			next_state = calibrating;
-		break;
 		}
+		break;
 
 	case(calibrating):
 		if(elev_get_floor_sensor_signal() >= 0) {
