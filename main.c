@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "elev.h"
 #include "finite_state_machine.h"
 #include "order_overview.h"

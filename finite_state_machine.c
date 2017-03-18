@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "finite_state_machine.h"
 #include "elev.h"
 #include "timer.h"
