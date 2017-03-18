@@ -1,12 +1,13 @@
 //De ulike tilstandene til heisen
 enum state {
-	start,
+	initialize,
 	calibrating,
 	door_closed,
 	door_open,
 	fulfilling_order,
 	em_stop_anywhere,
-	em_stop_at_floor
+	em_stop_at_floor,
+	exit				//ikke implementert som en case - programmet avsluttes fra main med en gang current_state == exit;
 };
 
 //Variabler
