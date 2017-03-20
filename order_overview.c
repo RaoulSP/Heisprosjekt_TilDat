@@ -185,18 +185,33 @@ void set_all(set){																//define an enum SET RESET?
 	}
 }
 
-int get_floor(floor){															//return boolean, return button type, or return direction type? What is the most elegant?
+int get_floor(floor){
+	int sum = 0;																//return boolean, return button type, or return direction type? What is the most elegant?
+	for (button = 0; button < 3; button ++){
+		sum += (button + 1) * (orders[floor_nr][button]);
+	}
+	return (sum - 1);															//Some trickery to have get_floor return 0 or 1 if only the up or down button has been stored, and 2 or more if command or multiple buttons have been stored.
+}
+
+int get_floor(floor){															//alternative
+	int sum = 0;
+	int last_button;
 	for (button = 0; button < 3; button ++){
 		if (orders[floor_nr][button]){
-			return 1;	
+			sum += 1;
+			last_button = button;
 		}
+	if (sum > 1){
+		return 2;
 	}
-	return 0;
+	else {
+		return last_button;
+	}
 }
 
 int check_along_dir(int from_floor, int along_dir){									//scan along direction? scan direction? Check partition? Scan ahead? Check in range? Any in range?
 	for (int floor = from_floor; (floor >= 0 && floor < 4); floor += along_dir){
-			if (get_floor(floor)){
+			if (get_floor(floor) > -1){
 				return 1;
 		}
 	}
