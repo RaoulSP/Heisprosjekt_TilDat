@@ -3,5 +3,5 @@ void oov_set_floor_orders(int floor, int set);
 void oov_set_all_orders(int set);
 int oov_check_order(int floor, int button);
 int oov_check_floor(int floor);
-int oov_check_along_dir(int from_floor, int along_dir); //Sjekker om det er gjort bestillinger langs en gitt retning fra en gitt etasje, og returnerer 1 dersom den finner noe
+int oov_check_floors_along_dir(int start_floor, int along_dir); //Sjekker om det er gjort bestillinger langs en gitt retning fra en gitt etasje, og returnerer 1 dersom den finner noe
 int oov_get_amount();

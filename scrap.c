@@ -2,9 +2,28 @@
 
 //Alternative functions for the current implementation of OOV:
 void oov_set_floor_orders(int floor, int set){
+	for (int button = 0; button < 3; button ++){
+		oov_set_order(floor, button, set);
+	}
+}
+
+void oov_set_floor_orders(int floor, int set){
 	oov_set_order(floor, 0, set);
 	oov_set_order(floor, 1, set);
 	oov_set_order(floor, 2, set);
+}
+
+void oov_set_all_orders(int set){ //alternative when the number of floors would be larger than 4
+	for (int floor = 0; floor < 4; floor ++){
+		oov_set_floor_orders(floor, set);
+	}
+}
+
+void oov_set_all_orders(int set){ //alternative for 4 floors, clean and fast
+	oov_set_floor_orders(0, set);
+	oov_set_floor_orders(1, set);
+	oov_set_floor_orders(2, set);
+	oov_set_floor_orders(4, set);
 }
 
 int oov_check_floor(int floor){

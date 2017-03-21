@@ -55,7 +55,7 @@ state fsm_run(state current_state) {
 				current_floor = sensor_signal;
 				elev_set_floor_indicator(current_floor);
 			}
-			if(oov_check_order(current_floor, 2) || (oov_check_order(current_floor, button_in_dir)) || !check_orders_along_dir(current_floor + dir, dir)){ //Stopper hvis noen vil av heisen, eller påstige i bevegelsesretningen, eller hvis det ikke er flere bestillinger i etasjene lenger bort i bevegelsesretningen
+			if(oov_check_order(current_floor, 2) || (oov_check_order(current_floor, button_in_dir)) || !oov_check_floors_along_dir(current_floor + dir, dir)){ //Stopper hvis noen vil av heisen, eller påstige i bevegelsesretningen, eller hvis det ikke er flere bestillinger i etasjene lenger bort i bevegelsesretningen
 					fsm_trans_arrive();
 					next_state = door_open;
 			}
@@ -111,7 +111,7 @@ void fsm_trans_finish_calibration(){
 }
 
 void fsm_trans_depart(){
-	if(!check_orders_along_dir(current_floor + dir, dir)){
+	if(!oov_check_floors_along_dir(current_floor + dir, dir)){
 		current_floor += dir;
 		dir *= -1;
 	}

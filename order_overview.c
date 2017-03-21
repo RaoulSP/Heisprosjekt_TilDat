@@ -35,8 +35,8 @@ int oov_check_floor(int floor){
 	return (oov_check_order(floor, 2) || oov_check_order(floor, 1) || oov_check_order(floor, 0));
 }
 
-int oov_check_along_dir(int from_floor, int along_dir){
-	for (int floor = from_floor; (floor >= 0 && floor < 4); floor += along_dir){
+int oov_check_floors_along_dir(int start_floor, int along_dir){
+	for (int floor = start_floor; (floor >= 0 && floor < 4); floor += along_dir){
 			if (oov_check_floor(floor)){
 				return 1;
 		}
