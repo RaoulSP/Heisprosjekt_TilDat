@@ -8,5 +8,5 @@ void timer_start(){
 }
 
 int timer_check(){
-	return difftime(time(NULL), start_time) > 3 ? 1 : 0; //Er det noe lurt som skjer her? Kommentar?
+	return difftime(time(NULL), start_time) > 3 ? 1 : 0; //Inline function
 }

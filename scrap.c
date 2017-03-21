@@ -1,4 +1,33 @@
-//alternative functions/implementations/ideas
+//This .c file contains alternative functions/implementations/ideas
+
+//Alternative functions for the current implementation of OOV:
+
+int oov_get_floor(int floor){
+	for (int button = 0; button < 3; button ++){
+		if(oov_get_order(floor, button)){
+			return 1;
+		}			
+	}
+	return 0;
+}
+
+int oov_get_floor(int floor){
+	for (int button = 0; button < 3; button ++){
+		if(orders[floor_nr][button] == 1){
+			return 1;
+		}			
+	}
+	return 0;
+}
+
+int get_floor(floor){ //get_floor_demand? get_floor_preference? get_floor_button
+	//This function performs some trickery to have get_floor return 0 or 1 if only the up or down button has been stored, and 2 or more if command or multiple buttons have been stored.
+	int sum = -1;
+	for (int button = 0; button < 3; button ++){
+		sum += (button + 1) * (orders[floor_nr][button]);			
+	}
+	return (sum); //return boolean, return button type, or return direction type? What is the most elegant?
+}
 
 int get_floor(floor){	//alternative get_floor
 	int sum = 0;
@@ -8,6 +37,7 @@ int get_floor(floor){	//alternative get_floor
 			sum += 1;
 			last_button = button;
 		}
+	}
 	if (sum > 1){
 		return 2;
 	}
@@ -33,8 +63,17 @@ if((floor + (-2 * button) + 1) >= 0 && (floor + (-2 * button) + 1) < 4) //New fu
 
 
 
-//First alternative, the old OOV functions
+//Original implementation of OOV
+//Header:
+void oov_set_order(int floor, int button, int value); //Verdien i etasje "floor" ved knapp "button" settes til "value", altså 0 eller 1
+int oov_get_order(int floor, int dir);
+void oov_reset_all_orders();	
+void oov_reset_floor_orders(int floor);
+int oov_get_amount();
+int oov_check_orders_along_dir(int from_floor, int along_dir);		//Sjekker om det er gjort bestillinger langs en gitt retning fra en gitt etasje, og returnerer 1 dersom den finner noe 
+void oov_set_new_orders(); 									//Sjekker om bestillingsknapper er trykket og lagrer dem som ordre i "order_overview"
 
+//Body:
 int orders[4][3] = {{0}};
 int orders_amount = 0;
 
@@ -93,7 +132,7 @@ int oov_check_orders_along_dir(int from_floor, int along_dir){
 
 
 
-//Second alternative, using a 1D array. Not completed, needs more work which follows through on the idea
+//Alternative implementation of OOV using a 1D array. Not completed or consistent, needs more work which follows through on the idea.
 
 int orders[4] = {-1};
 
@@ -189,7 +228,7 @@ void get_floor_bool(int floor){
 	return orders[floor][0] + orders[floor][1] + orders[floor][2];
 }
 
-//Possible examples of desired use
+//Possible examples of desired use:
 set_floor_orders(floor_nr, 0, 0, 0); //reset floor
 get_floor_bool(floor_nr);
 set_floor_orders(floor_nr, elev_get_button_signal(0, floor_nr), elev_get_button_signal(1, floor_nr), elev_get_button_signal(2, floor_nr));

@@ -1,43 +1,49 @@
 #include "order_overview.h"
 #include "elev.h"
 
+int orders[4][3] = {{0}};
+int orders_amount = 0;
 
-
-void set_single(floor, button, set){											//A function that works kind of like a set/reset latch to set a single order? So if the set flag is 1 then the value is set according to if the button is pressed. If the set flag is 0, the order is reset. Might work! following through on this concept below, with the other functions.
-	if(!((floor == 0 && button == 1) || (floor == 3 && button == 0))){
-		value = set && elev_get_button_signal(button, floor); 					//replaced * with &&. with * , does it check button signal too often? Does it call the button check when set is 0? With &&, will it abort after set == 0?
-		if (orders[floor_nr][button] != value){		//Necessary? Nice to do
-			orders[floor_nr][button] = value;
+void oov_set_order(int floor, int button, int set){
+	if(!((floor == 0 && button == 1) || (floor == 3 && button == 0))){ //Ignorerer de to ugyldige knappene
+		value = set && elev_get_button_signal(button, floor);
+		if (orders[floor][button] != value){
+			orders[floor][button] = value;
 			elev_set_button_lamp(button, floor, value);
+			orders_amount += (-1 + 2 * value); //Øker med 1 hvis det blir gjort en bestilling. Minker med 1 dersom en bestilling slettes 
 		}
 	}
 }
 
-void set_floor(floor, set){
-	for (button = 0; button < 3; button ++){
-		set_single(floor, button, set);
+void oov_set_floor_orders(int floor, int set){
+	for (int button = 0; button < 3; button ++){
+		oov_set_order(floor, button, set);
 	}
 }
 
-void set_all(set){																//define an enum SET RESET?
-	for (floor = 0; floor < 4; floor ++){
-		set_floor(floor, set);
+void oov_set_all_orders(int set){
+	for (int floor = 0; floor < 4; floor ++){
+		oov_set_floor_orders(floor, set);
 	}
 }
 
-int get_floor(floor){	//get_floor_demand? get_floor_preference? get_floor_button
-	int sum = 0;																//return boolean, return button type, or return direction type? What is the most elegant?
-	for (button = 0; button < 3; button ++){	//would be slightly more efficient in the opposite direction
-		sum += (button + 1) * (orders[floor_nr][button]);						//Some trickery to have get_floor return 0 or 1 if only the up or down button has been stored, and 2 or more if command or multiple buttons have been stored.
-	}
-	return (sum - 1);															//could initialize sum to -1 and not subtract here, with same result
-
+int oov_get_order(int floor, int button){
+	return orders[floor][button];
 }
-int check_along_dir(int from_floor, int along_dir){									//scan along direction? scan direction? Check partition? Scan ahead? Check in range? Any in range?
+
+int oov_get_floor(int floor){
+	return (oov_get_order(floor, 2) || oov_get_order(floor, 1) || oov_get_order(floor, 0));
+}
+
+int oov_check_along_dir(int from_floor, int along_dir){
 	for (int floor = from_floor; (floor >= 0 && floor < 4); floor += along_dir){
-			if (get_floor(floor) > -1){
+			if (oov_get_floor(floor)){
 				return 1;
 		}
 	}
 	return 0;
+}
+
+int oov_get_amount(){
+	return orders_amount;
 }

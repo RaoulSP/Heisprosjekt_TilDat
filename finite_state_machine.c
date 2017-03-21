@@ -6,14 +6,15 @@
 
 //Kode som bare gjennomføres én gang i overgangene mellom tilstandene, kjøres i "fsm_trans" funksjonene
 //Kode som må kjøres kontinuerlig mens heisen er i en tilstand, kjøres i casene
-enum state fsm_run(enum state current_state) {
+
+state fsm_run(state current_state) {
 
 	switch (current_state) {
 
 	case(initialize):
 		if (!elev_init()) { 									//Initialiser maskinvare
 			printf("Unable to initialize elevator hardware!\n");
-			next_state = exit;
+			next_state = abort;
 		}
 		else{
 			fsm_trans_start_calibration();
@@ -29,19 +30,19 @@ enum state fsm_run(enum state current_state) {
 		break;
 
 	case(door_closed):
-		oov_set_new_orders();
+		oov_set_all_orders(1);
 		if(elev_get_stop_signal()){	
 			fsm_trans_em_stop_press();
 			next_state = em_stop_anywhere;
 		}
-		else if(oov_get_amount()){
+		else if(oov_check_along_dir(0, 1)){
 			fsm_trans_depart();
 			next_state = fulfilling_order;				
 		}
 		break;
 
 	case(fulfilling_order):
-		oov_set_new_orders();
+		oov_set_all_orders(1);
 		if(elev_get_stop_signal()){
 			fsm_trans_em_stop_press();
 			next_state = em_stop_anywhere; 
@@ -49,13 +50,13 @@ enum state fsm_run(enum state current_state) {
 		else{
 			sensor_signal = elev_get_floor_sensor_signal();
 			if (sensor_signal >= 0) { 
-				//Styring av etasjeindikator
-				if(sensor_signal != current_floor){ 
+				if(current_floor != sensor_signal){ 
 					current_floor = sensor_signal;
 					elev_set_floor_indicator(current_floor);
 				}
+				int button_in_dir = ((dir - 1) / -2);
 				//Stopper hvis noen vil av heisen, eller påstige i bevegelsesretningen, eller hvis det ikke er flere bestillinger i etasjene lenger bort i bevegelsesretningen
-				if(oov_get_order(current_floor, 2) || (oov_get_order(current_floor, 0) && dir == 1) || (oov_get_order(current_floor, 1) && dir == -1) || !check_orders_along_dir(current_floor + dir, dir)){
+				if(oov_get_order(current_floor, 2) || (oov_get_order(current_floor, button_in_dir)) || !check_orders_along_dir(current_floor + dir, dir)){
 						fsm_trans_arrive();
 						next_state = door_open;
 				}
@@ -64,24 +65,18 @@ enum state fsm_run(enum state current_state) {
 		break;
 
 	case(door_open):
-		oov_set_new_orders();
+		oov_set_all_orders(1);
 		if (elev_get_stop_signal()){
 			fsm_trans_em_stop_press();
 			next_state = em_stop_anywhere;
 		}
-		else{
-			if(timer_check()){
-				fsm_trans_close();
-				next_state = door_closed;
-			}
-			else{
-				for(int button = 0; button < 3; button++){
-					if(oov_get_order(current_floor, button)){
-						fsm_trans_reopen();
-					}
-				}
-			}
+		else if (oov_get_floor(current_floor)){
+			fsm_trans_reopen();
 		}	
+		else if(timer_check()){
+			fsm_trans_close();
+			next_state = door_closed;
+		}
 		break;	
 
 	case(em_stop_anywhere):
@@ -127,14 +122,14 @@ void fsm_trans_depart(){
 
 void fsm_trans_arrive(){
 	elev_set_motor_direction(0);
-	oov_reset_floor_orders(current_floor);
+	oov_set_floor_orders(current_floor, 0);
 	elev_set_door_open_lamp(1);
 	timer_start();
 }
 
 void fsm_trans_reopen(){
 	timer_start();
-	oov_reset_floor_orders(current_floor);
+	oov_set_floor_orders(current_floor, 0);
 }
 
 void fsm_trans_close(){
@@ -143,7 +138,7 @@ void fsm_trans_close(){
 
 void fsm_trans_em_stop_press(){
 	elev_set_motor_direction(0);
-	oov_reset_all_orders();
+	oov_set_all_orders(0);
 	elev_set_stop_lamp(1);
 }
 

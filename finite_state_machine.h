@@ -1,5 +1,6 @@
 //De ulike tilstandene til heisen
-enum state {
+
+enum tag_state {
 	initialize,
 	calibrating,
 	door_closed,
@@ -7,17 +8,19 @@ enum state {
 	fulfilling_order,
 	em_stop_anywhere,
 	em_stop_at_floor,
-	exit				//ikke implementert som en case - programmet avsluttes fra main med en gang current_state == exit;
+	abort				//ikke implementert som en switch case - programmet avsluttes fra main med en gang current_state == abort;
 };
 
+typedef enum tag_state state;
+
 //Variabler
-enum state next_state;
+state next_state;
 int sensor_signal;
 int current_floor;
 int dir;
 
 //Hovedfunksjon - Returnerer neste tilstand
-enum state fsm_run(enum state current_state);
+state fsm_run(state current_state);
 
 //Overganger mellom tilstander
 void fsm_trans_start_calibration();
