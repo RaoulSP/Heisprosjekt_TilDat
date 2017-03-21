@@ -1,17 +1,22 @@
 //This .c file contains alternative functions/implementations/ideas
 
 //Alternative functions for the current implementation of OOV:
+void oov_set_floor_orders(int floor, int set){
+	oov_set_order(floor, 0, set);
+	oov_set_order(floor, 1, set);
+	oov_set_order(floor, 2, set);
+}
 
-int oov_get_floor(int floor){
+int oov_check_floor(int floor){
 	for (int button = 0; button < 3; button ++){
-		if(oov_get_order(floor, button)){
+		if(oov_check_order(floor, button)){
 			return 1;
 		}			
 	}
 	return 0;
 }
 
-int oov_get_floor(int floor){
+int oov_check_floor(int floor){
 	for (int button = 0; button < 3; button ++){
 		if(orders[floor_nr][button] == 1){
 			return 1;

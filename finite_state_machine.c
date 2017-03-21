@@ -35,31 +35,29 @@ state fsm_run(state current_state) {
 			fsm_trans_em_stop_press();
 			next_state = em_stop_anywhere;
 		}
-		else if(oov_check_along_dir(0, 1)){
+		else if(oov_get_amount()){
 			fsm_trans_depart();
-			next_state = fulfilling_order;				
+			next_state = fulfilling_order;
 		}
 		break;
 
 	case(fulfilling_order):
 		oov_set_all_orders(1);
+		sensor_signal = elev_get_floor_sensor_signal();
+		int button_in_dir = ((dir - 1) / -2);
+
 		if(elev_get_stop_signal()){
 			fsm_trans_em_stop_press();
 			next_state = em_stop_anywhere; 
 		}
-		else{
-			sensor_signal = elev_get_floor_sensor_signal();
-			if (sensor_signal >= 0) { 
-				if(current_floor != sensor_signal){ 
-					current_floor = sensor_signal;
-					elev_set_floor_indicator(current_floor);
-				}
-				int button_in_dir = ((dir - 1) / -2);
-				//Stopper hvis noen vil av heisen, eller påstige i bevegelsesretningen, eller hvis det ikke er flere bestillinger i etasjene lenger bort i bevegelsesretningen
-				if(oov_get_order(current_floor, 2) || (oov_get_order(current_floor, button_in_dir)) || !check_orders_along_dir(current_floor + dir, dir)){
-						fsm_trans_arrive();
-						next_state = door_open;
-				}
+		else if (sensor_signal >= 0) { 
+			if(current_floor != sensor_signal){ 
+				current_floor = sensor_signal;
+				elev_set_floor_indicator(current_floor);
+			}
+			if(oov_check_order(current_floor, 2) || (oov_check_order(current_floor, button_in_dir)) || !check_orders_along_dir(current_floor + dir, dir)){ //Stopper hvis noen vil av heisen, eller påstige i bevegelsesretningen, eller hvis det ikke er flere bestillinger i etasjene lenger bort i bevegelsesretningen
+					fsm_trans_arrive();
+					next_state = door_open;
 			}
 		}
 		break;
@@ -70,7 +68,7 @@ state fsm_run(state current_state) {
 			fsm_trans_em_stop_press();
 			next_state = em_stop_anywhere;
 		}
-		else if (oov_get_floor(current_floor)){
+		else if (oov_check_floor(current_floor)){
 			fsm_trans_reopen();
 		}	
 		else if(timer_check()){

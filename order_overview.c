@@ -27,17 +27,17 @@ void oov_set_all_orders(int set){
 	}
 }
 
-int oov_get_order(int floor, int button){
+int oov_check_order(int floor, int button){
 	return orders[floor][button];
 }
 
-int oov_get_floor(int floor){
-	return (oov_get_order(floor, 2) || oov_get_order(floor, 1) || oov_get_order(floor, 0));
+int oov_check_floor(int floor){
+	return (oov_check_order(floor, 2) || oov_check_order(floor, 1) || oov_check_order(floor, 0));
 }
 
 int oov_check_along_dir(int from_floor, int along_dir){
 	for (int floor = from_floor; (floor >= 0 && floor < 4); floor += along_dir){
-			if (oov_get_floor(floor)){
+			if (oov_check_floor(floor)){
 				return 1;
 		}
 	}
