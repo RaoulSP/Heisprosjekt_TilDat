@@ -4,8 +4,8 @@
 #include "timer.h"
 #include "order_overview.h"
 
-//Kode som bare gjennomføres én gang i overgangene mellom tilstandene, kjøres i "fsm_trans" funksjonene
-//Kode som må kjøres kontinuerlig mens heisen er i en tilstand, kjøres i casene
+//Kode som bare gjennomfÃ¸res Ã©n gang i overgangene mellom tilstandene, kjÃ¸res i "fsm_trans" funksjonene
+//Kode som mÃ¥ kjÃ¸res kontinuerlig mens heisen er i en tilstand, kjÃ¸res i casene
 enum state fsm_run(enum state current_state) {
 
 	switch (current_state) {
@@ -54,8 +54,8 @@ enum state fsm_run(enum state current_state) {
 					current_floor = sensor_signal;
 					elev_set_floor_indicator(current_floor);
 				}
-				//Stopper hvis noen vil av heisen, eller påstige i bevegelsesretningen, eller hvis det ikke er flere bestillinger i etasjene lenger bort i bevegelsesretningen
-				if(oov_get_order(current_floor, 2) || (oov_get_order(current_floor, 0) && dir == 1) || (oov_get_order(current_floor, 1) && dir == -1) || !check_orders_along_dir(current_floor + dir, dir)){
+				//Stopper hvis noen vil av heisen, eller pÃ¥stige i bevegelsesretningen, eller hvis det ikke er flere bestillinger i etasjene lenger bort i bevegelsesretningen
+				if(oov_get_order(current_floor, 2) || (oov_get_order(current_floor, 0) && dir == 1) || (oov_get_order(current_floor, 1) && dir == -1) || !oov_check_orders_along_dir(current_floor + dir, dir)){
 						fsm_trans_arrive();
 						next_state = door_open;
 				}
@@ -118,7 +118,7 @@ void fsm_trans_finish_calibration(){
 }
 
 void fsm_trans_depart(){
-	if(!check_orders_along_dir(current_floor + dir, dir)){
+	if(!oov_check_orders_along_dir(current_floor + dir, dir)){
 		current_floor += dir;
 		dir *= -1;
 	}
